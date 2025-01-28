@@ -55,10 +55,12 @@ def match_groups(G1: dict[str, tuple], G2: dict[str, tuple]):
     assigned_g2 = set()
     g2_to_g1 = {}
     for g2_id in G2:
-        
+
         # Собираем все возможные G1 для текущего G2 и сортируем их по IoU
         pairs_for_g2 = [(g1_id, iou) for (g2, g1_id, iou) in all_pairs_sorted if g2 == g2_id]
         g2_to_g1[g2_id] = pairs_for_g2
+
+    iou_scores = []
 
     # Первый проход: жадное назначение без пересечений (только IoU > 0)
     for g2_id, g1_id, iou in all_pairs_sorted:
@@ -76,6 +78,7 @@ def match_groups(G1: dict[str, tuple], G2: dict[str, tuple]):
         if not conflict:
             assignments[g1_id].append(g2_id)
             assigned_g2.add(g2_id)
+            iou_scores.append(iou)
 
     # Второй проход: доназначение оставшихся G2 (только IoU > 0)
     unassigned_g2 = set(G2.keys()) - assigned_g2
@@ -93,12 +96,108 @@ def match_groups(G1: dict[str, tuple], G2: dict[str, tuple]):
             if not conflict:
                 assignments[g1_id].append(g2_id)
                 assigned_g2.add(g2_id)
+                iou_scores.append(iou)
                 break
 
-    #return {g1_id: assignments[g1_id] for g1_id in G1}
-    return {
+    result_dict = {
         g1_id: sorted(assignments[g1_id])  # Сортировка для детерминированности
         for g1_id in G1
     }
 
+    result_score = round(sum(iou_scores) / len(iou_scores), 2)
 
+    return result_score, result_dict
+
+
+if __name__ == '__main__':
+        
+        G1 = {
+            'A': (1, 4),
+            'B': (6, 11),
+            'C': (2, 11)
+        }
+
+        G2 = {
+            'D': (2, 11),
+            'F': (1, 4),
+            'G': (6, 11)
+        }
+
+        score, _ = match_groups(G1, G2)
+        print(score)
+        
+        G1 = {
+            'A': (1, 4),
+            'B': (6, 11),
+            'C': (2, 11)
+        }
+
+        G2 = {
+            'D': (2, 8),
+            'E': (8, 11),
+            'F': (1, 4),
+            'G': (6, 11)
+        }
+
+        score, _ = match_groups(G1, G2)
+        print(score)
+
+
+        G1 = {
+            'A': (1, 4),
+            'B': (6, 11),
+            'C': (2, 11)
+        }
+
+        G2 = {
+            'D': (3, 7),
+            'E': (8, 11),
+            'F': (1, 2),
+            'G': (6, 10)
+        }
+
+        score, _ = match_groups(G1, G2)
+        print(score)
+
+        G1 = {
+            'A': (1, 4),
+            'B': (6, 11)
+        }
+
+        G2 = {
+            'C': (3, 7),
+            'D': (8, 11),
+            'E': (1, 2),
+            'F': (6, 10)
+        }
+
+        score, _ = match_groups(G1, G2)
+        print(score)
+
+        G1 = {
+            'A': (2, 11)
+        }
+
+        G2 = {
+            'B': (3, 7),
+            'C': (8, 11),
+            'D': (1, 2),
+            'E': (6, 10)
+        }
+
+        score, _ = match_groups(G1, G2)
+        print(score)
+
+        G1 = {
+            'A': (2, 11)
+        }
+
+        G2 = {
+            'B': (1, 2),
+            'C': (2, 3),
+            'D': (4, 6),
+            'E': (7, 10)
+        }
+
+        score, _ = match_groups(G1, G2)
+        print(score)

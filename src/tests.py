@@ -24,7 +24,7 @@ class TestMatchFunction(unittest.TestCase):
             'C': ['D', 'E']
         }
 
-        result = match_groups(G1, G2)
+        _, result = match_groups(G1, G2)
 
         self.assertEqual(result, expected_result)
 
@@ -49,7 +49,7 @@ class TestMatchFunction(unittest.TestCase):
             'C': ['D', 'E']
         }
 
-        result = match_groups(G1, G2)
+        _, result = match_groups(G1, G2)
 
         self.assertEqual(result, expected_result)
 
@@ -72,7 +72,7 @@ class TestMatchFunction(unittest.TestCase):
             'B': ['F']
         }
 
-        result = match_groups(G1, G2)
+        _, result = match_groups(G1, G2)
 
         self.assertEqual(result, expected_result)
 
@@ -93,7 +93,7 @@ class TestMatchFunction(unittest.TestCase):
             'A': ['B','C']
         }
 
-        result = match_groups(G1, G2)
+        _, result = match_groups(G1, G2)
 
         self.assertEqual(result, expected_result)
 
@@ -114,7 +114,7 @@ class TestMatchFunction(unittest.TestCase):
             'A': ['C','D','E']
         }
 
-        result = match_groups(G1, G2)
+        _, result = match_groups(G1, G2)
 
         self.assertEqual(result, expected_result)
 
