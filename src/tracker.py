@@ -178,6 +178,8 @@ class VideoTrackerApp:
             else:
                 to_remove.append(obj_id)
                 self.is_playing = False
+                self.btn_play.config(text="Play")
+
         
         # Remove failed trackers
         for obj_id in to_remove:
@@ -214,14 +216,17 @@ class VideoTrackerApp:
             w = int(abs(x2 - x1))
             h = int(abs(y2 - y1))
 
-            if obj_id in self.trackers:
-                del self.trackers[obj_id]
-                gc.collect()
+            #if obj_id in self.trackers:
+            #    del self.trackers[obj_id]
+            #    gc.collect()
             
-            if not obj_id in self.trackers:
+            #if not obj_id in self.trackers:
                 #self.trackers[obj_id] = cv2.TrackerCSRT_create()
-                self.trackers[obj_id] = cv2.TrackerKCF_create()
-                #self.trackers[obj_id] = cv2.legacy.TrackerMOSSE_create()
+                #self.trackers[obj_id] = cv2.TrackerKCF_create()
+
+            #self.trackers[obj_id] = cv2.legacy.TrackerMOSSE_create()
+            self.trackers[obj_id] = cv2.TrackerKCF_create()
+            gc.collect()
 
             bbox = (x, y, w, h)
             self.trackers[obj_id].init(self.frame, bbox)
@@ -230,9 +235,11 @@ class VideoTrackerApp:
             
             self.update_frame(True)
 
+            gc.collect()
+
     def delete_bbox(self):
 
-        if not self.is_tracking:
+        if not self.is_playing:
 
             obj_id = int(simpledialog.askstring("Object ID", "Enter object ID to delete all associated data:"))
             self.tracking_data[:, obj_id, :] = 0
@@ -246,7 +253,7 @@ class VideoTrackerApp:
 
     def remove_track(self):
         
-        if not self.is_tracking:
+        if not self.is_playing:
 
             obj_id = int(simpledialog.askstring("Object ID", "Enter object ID to stop and remove tracker:"))
 
@@ -286,9 +293,6 @@ class VideoTrackerApp:
                     segment_end = int(i)
                     data[obj].append([segment_start, segment_end])
                 v_prev = v
-
-            if segment_end > segment_start:
-                data[obj].append([segment_start, segment_end])
                     
 
         if file_path:
