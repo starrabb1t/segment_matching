@@ -215,15 +215,7 @@ class VideoTrackerApp:
             y = int(min(y1, y2))
             w = int(abs(x2 - x1))
             h = int(abs(y2 - y1))
-
-            #if obj_id in self.trackers:
-            #    del self.trackers[obj_id]
-            #    gc.collect()
             
-            #if not obj_id in self.trackers:
-                #self.trackers[obj_id] = cv2.TrackerCSRT_create()
-                #self.trackers[obj_id] = cv2.TrackerKCF_create()
-
             self.trackers[obj_id] = cv2.legacy.TrackerMOSSE_create()
             #self.trackers[obj_id] = cv2.TrackerKCF_create()
             gc.collect()
