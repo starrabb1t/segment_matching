@@ -65,7 +65,7 @@ def calc_iou_on_groups(G1: list[tuple], G2: list[tuple]) -> float:
     else:
         return intersection / union_length
 
-def match(gt: dict[str, list[tuple]], pred: dict[str, list[tuple]]):
+def match(gt: dict[str, list[tuple]], pred: dict[str, list[tuple]], verbose = False):
 
     _gt = gt.copy()
     _pred = pred.copy()
@@ -79,7 +79,8 @@ def match(gt: dict[str, list[tuple]], pred: dict[str, list[tuple]]):
         max_k1 = None
         max_k2 = None
 
-        print('---')
+        if verbose:
+            print('---')
 
         for k1, v1 in _pred.items():
 
@@ -87,7 +88,8 @@ def match(gt: dict[str, list[tuple]], pred: dict[str, list[tuple]]):
                 
                 iou = calc_iou_on_groups(v1, v2)
 
-                print(k2, k1, round(iou,2))
+                if verbose:
+                    print(k2, k1, round(iou,2))
 
                 if iou > max_iou:
                     max_iou = iou
@@ -108,35 +110,181 @@ def match(gt: dict[str, list[tuple]], pred: dict[str, list[tuple]]):
     
     else:
         result_iou = 0
+
+    if verbose:
+        print('---')
+        print(result_map)
+        print("IoU:", result_iou)
         
     return result_iou, result_map
 
 
+import unittest
+
+class TestMatchFunction(unittest.TestCase):
+
+    def __assert(self, ground_truth, prediction, expected_map, expected_iou, match_precision = 2, verbose = True):
+
+        result_iou, result_map = match(ground_truth, prediction, verbose)
+
+        self.assertEqual(result_map, expected_map)
+        self.assertEqual(round(result_iou, match_precision), expected_iou)
+        
+
+    def test_1(self):
+
+        ground_truth = {
+            'AB': [
+                (1,4),
+                (6,11)
+            ],
+            'C': [
+                (2,11),
+            ]
+        }
+
+        prediction = {
+            'DE': [
+                (2,8),
+                (8,11)
+            ],
+            'F': [
+                (1,4)
+            ],
+            'G': [
+                (6,11)
+            ]
+        }
+
+        expected_map = {
+            'C': 'DE', 
+            'AB': 'G'
+        }
+
+        expected_iou = 0.81
+
+        self.__assert(ground_truth, prediction, expected_map, expected_iou)
+        
+    def test_2(self):
+
+        ground_truth = {
+            'AB': [
+                (1,4),
+                (6,11)
+            ],
+            'C': [
+                (2,11),
+            ]
+        }
+
+        prediction = {
+            'DE': [
+                (3,7),
+                (8,11)
+            ],
+            'F': [
+                (1,2)
+            ],
+            'G': [
+                (6,10)
+            ]
+        }
+
+        expected_map = {
+            'C': 'DE', 
+            'AB': 'G'
+        }
+
+        expected_iou = 0.64
+        
+        self.__assert(ground_truth, prediction, expected_map, expected_iou)
+
+    def test_3(self):
+
+        ground_truth = {
+            'AB': [
+                (1,4),
+                (6,11)
+            ]
+        }
+
+        prediction = {
+            'CD': [
+                (3,8),
+                (8,11)
+            ],
+            'E': [
+                (1,2)
+            ],
+            'F': [
+                (6,10)
+            ]
+        }
+
+        expected_map = {
+            'AB': 'CD'
+        }
+
+        expected_iou = 0.6
+        
+        self.__assert(ground_truth, prediction, expected_map, expected_iou)
+
+    def test_4(self):
+
+        ground_truth = {
+            'A': [
+                (2,11)
+            ]
+        }
+
+        prediction = {
+            'BC': [
+                (3,7),
+                (8,11)
+            ],
+            'D': [
+                (1,2)
+            ],
+            'E': [
+                (6,10)
+            ]
+        }
+
+        expected_map = {
+            'A': 'BC'
+        }
+
+        expected_iou = 0.78
+        
+        self.__assert(ground_truth, prediction, expected_map, expected_iou)
+
+    def test_5(self):
+
+        ground_truth = {
+            'A': [
+                (2,11)
+            ]
+        }
+
+        prediction = {
+            'B': [
+                (1,2)
+            ],
+            'CDE': [
+                (2,3),
+                (4,6),
+                (7,10)
+            ]
+        }
+
+        expected_map = {
+            'A': 'CDE'
+        }
+
+        expected_iou = 0.67
+        
+        self.__assert(ground_truth, prediction, expected_map, expected_iou)
+
 if __name__ == '__main__':
 
-    ground_truth = {
-        'AB': [
-            (1,4),
-            (6,11)
-        ],
-        'C': [
-            (2,11),
-        ]
-    }
-
-    prediction = {
-        'DE': [
-            (2,8),
-            (8,11)
-        ],
-        'F': [
-            (1,4)
-        ],
-        'G': [
-            (6,11)
-        ]
-    }
-
-    iou, _map = match(ground_truth, prediction)
-
-    print(round(iou,2), _map)
+    unittest.main()
