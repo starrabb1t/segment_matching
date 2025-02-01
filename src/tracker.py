@@ -224,8 +224,8 @@ class VideoTrackerApp:
                 #self.trackers[obj_id] = cv2.TrackerCSRT_create()
                 #self.trackers[obj_id] = cv2.TrackerKCF_create()
 
-            #self.trackers[obj_id] = cv2.legacy.TrackerMOSSE_create()
-            self.trackers[obj_id] = cv2.TrackerKCF_create()
+            self.trackers[obj_id] = cv2.legacy.TrackerMOSSE_create()
+            #self.trackers[obj_id] = cv2.TrackerKCF_create()
             gc.collect()
 
             bbox = (x, y, w, h)

@@ -120,6 +120,7 @@ def match(gt: dict[str, list[tuple]], pred: dict[str, list[tuple]], verbose = Fa
 
 
 import unittest
+import json
 
 class TestMatchFunction(unittest.TestCase):
 
@@ -287,4 +288,12 @@ class TestMatchFunction(unittest.TestCase):
 
 if __name__ == '__main__':
 
-    unittest.main()
+    #unittest.main()
+
+    with open('data/json/1.json', 'r') as f:
+        record_1 = json.loads(f.read())
+    
+    with open('data/json/2.json', 'r') as f:
+        record_2 = json.loads(f.read())
+
+    match(record_1, record_2, True)
