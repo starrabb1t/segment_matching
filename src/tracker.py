@@ -129,6 +129,7 @@ class VideoTrackerApp:
                 self.current_frame += 1
 
             self.photo = ImageTk.PhotoImage(image=Image.fromarray(self.frame))
+            self.canvas.delete("all")
             self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
 
             self.draw_boxes()
@@ -183,8 +184,7 @@ class VideoTrackerApp:
         
         # Remove failed trackers
         for obj_id in to_remove:
-            del self.trackers[obj_id]
-            gc.collect()
+            self.drop_tracker_if_exists(obj_id)
 
     def on_scale(self, value):
         self.current_frame = int(value)
@@ -235,10 +235,7 @@ class VideoTrackerApp:
 
             obj_id = int(simpledialog.askstring("Object ID", "Enter object ID to delete all associated data:"))
             self.tracking_data[:, obj_id, :] = 0
-
-            del self.trackers[obj_id]
-            gc.collect()
-        
+            self.drop_tracker_if_exists(obj_id)
             self.update_frame()
 
             print("Object deleted")
@@ -248,10 +245,14 @@ class VideoTrackerApp:
         if not self.is_playing:
 
             obj_id = int(simpledialog.askstring("Object ID", "Enter object ID to stop and remove tracker:"))
+            self.drop_tracker_if_exists(obj_id)
 
-            del self.trackers[obj_id]
-            gc.collect()
-
+    def drop_tracker_if_exists(self, obj_id):
+        if obj_id not in self.trackers:
+            return
+        self.trackers[obj_id].clear()
+        del self.trackers[obj_id]
+        gc.collect()
 
     def list_objects(self):
         objects = np.unique(np.where(self.tracking_data[:, :, -1] > 0)[-1])
