@@ -216,8 +216,8 @@ class VideoTrackerApp:
             w = int(abs(x2 - x1))
             h = int(abs(y2 - y1))
             
-            self.trackers[obj_id] = cv2.legacy.TrackerMOSSE_create()
-            #self.trackers[obj_id] = cv2.TrackerKCF_create()
+            #self.trackers[obj_id] = cv2.legacy.TrackerMOSSE_create()
+            self.trackers[obj_id] = cv2.TrackerKCF_create()
             gc.collect()
 
             bbox = (x, y, w, h)
@@ -250,7 +250,7 @@ class VideoTrackerApp:
     def drop_tracker_if_exists(self, obj_id):
         if obj_id not in self.trackers:
             return
-        self.trackers[obj_id].clear()
+        #self.trackers[obj_id].clear()
         del self.trackers[obj_id]
         gc.collect()
 
